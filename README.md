@@ -67,7 +67,3 @@ autogen-react-builder/
   - UI components with ShadcnUI
   - Code editing with Monaco Editor
   - Animations with Framer Motion
-
-## License
-
-MIT 
