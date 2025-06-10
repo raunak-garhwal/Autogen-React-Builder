@@ -12,12 +12,10 @@ class ProjectConfig(BaseModel):
     project_name: str
     description: Optional[str] = ""
     features: List[str] = []
-    styling: str = "tailwind"
-    state_management: Optional[str] = None
+    state_management: bool = False
     routing: bool = False
-    ui_framework: Optional[str] = None
+    icons: bool = False
     animations: bool = False
-    dev_tools: bool = False
 
 @router.post("/generate")
 async def generate_project(config: ProjectConfig, background_tasks: BackgroundTasks):

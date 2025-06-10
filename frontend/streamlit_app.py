@@ -95,40 +95,25 @@ def render_config_form():
         project_name = st.text_input("Project Name", placeholder="my-react-app")
         description = st.text_area("Description", placeholder="A modern React application")
         
-        # Styling
-        st.subheader("Styling")
-        styling = st.selectbox(
-            "Styling Solution",
-            options=["tailwind", "css-modules", "styled-components"],
-            index=0
-        )
-        
         # Features
         st.subheader("Features")
         col1, col2 = st.columns(2)
         
         with col1:
-            state_management = st.selectbox(
-                "State Management",
-                options=["None", "zustand", "redux-toolkit"],
-                index=0
+            state_management = st.checkbox(
+                "Add State Management",
+                value=False,
+                help="Uses Zustand for state management"
             )
-            
-            routing = st.checkbox("Add React Router", value=True)
+            routing = st.checkbox("Add React Router", value=False)
             
         with col2:
-            ui_framework = st.selectbox(
-                "UI Framework",
-                options=["None", "shadcn", "material-ui"],
-                index=0
+            icons = st.checkbox(
+                "Add Icon Libraries",
+                value=False,
+                help="Includes both lucide-react and react-icons libraries"
             )
-            
             animations = st.checkbox("Add Framer Motion", value=False)
-            
-        # Development Tools
-        st.subheader("Development Tools")
-        dev_tools = st.checkbox("Add Development Tools", value=False,
-            help="Includes Monaco Editor, testing setup, and debugging utilities")
             
         # Submit Button
         submitted = st.form_submit_button("Generate Project")
@@ -142,12 +127,10 @@ def render_config_form():
             config = {
                 "project_name": project_name,
                 "description": description,
-                "styling": styling,
-                "state_management": state_management if state_management != "None" else None,
+                "state_management": state_management,
                 "routing": routing,
-                "ui_framework": ui_framework if ui_framework != "None" else None,
-                "animations": animations,
-                "dev_tools": dev_tools
+                "icons": icons,
+                "animations": animations
             }
             print(f"[DEBUG] Generated config: {config}")
             

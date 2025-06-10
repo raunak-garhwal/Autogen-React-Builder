@@ -36,10 +36,7 @@ class FoundationAgent:
         # Generate package.json
         package_json = self._generate_package_json(config_dict)
         
-        # Generate tsconfig.json
-        tsconfig = self._generate_tsconfig()
-        
-        # Generate vite.config.ts
+        # Generate vite.config.js
         vite_config = self._generate_vite_config(config_dict)
         
         # Write configuration files
@@ -47,10 +44,7 @@ class FoundationAgent:
             with open(os.path.join(project_dir, "package.json"), "w") as f:
                 json.dump(package_json, f, indent=2)
                 
-            with open(os.path.join(project_dir, "tsconfig.json"), "w") as f:
-                json.dump(tsconfig, f, indent=2)
-                
-            with open(os.path.join(project_dir, "vite.config.ts"), "w") as f:
+            with open(os.path.join(project_dir, "vite.config.js"), "w") as f:
                 f.write(vite_config)
                 
             return True
@@ -67,8 +61,8 @@ class FoundationAgent:
             "type": "module",
             "scripts": {
                 "dev": "vite",
-                "build": "tsc && vite build",
-                "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+                "build": "vite build",
+                "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
                 "preview": "vite preview"
             },
             "dependencies": {
@@ -78,24 +72,20 @@ class FoundationAgent:
             "devDependencies": {
                 "@types/react": "^18.2.15",
                 "@types/react-dom": "^18.2.7",
-                "@typescript-eslint/eslint-plugin": "^6.0.0",
-                "@typescript-eslint/parser": "^6.0.0",
                 "@vitejs/plugin-react": "^4.0.3",
                 "eslint": "^8.45.0",
+                "eslint-plugin-react": "^7.32.2",
                 "eslint-plugin-react-hooks": "^4.6.0",
                 "eslint-plugin-react-refresh": "^0.4.3",
-                "typescript": "^5.0.2",
-                "vite": "^4.4.5"
+                "vite": "^4.4.5",
+                "tailwindcss": "^3.3.0",
+                "postcss": "^8.4.31",
+                "autoprefixer": "^10.4.16"
             }
         }
         
         # Add optional dependencies based on configuration
-        if config["styling"] == "tailwind":
-            package["devDependencies"]["tailwindcss"] = "^3.3.0"
-            package["devDependencies"]["postcss"] = "^8.4.31"
-            package["devDependencies"]["autoprefixer"] = "^10.4.16"
-            
-        if config["state_management"] == "zustand":
+        if config["state_management"]:
             package["dependencies"]["zustand"] = "^4.4.1"
             
         if config["routing"]:
@@ -104,11 +94,9 @@ class FoundationAgent:
         if config["animations"]:
             package["dependencies"]["framer-motion"] = "^10.16.4"
             
-        if config["ui_framework"] == "shadcn":
-            package["dependencies"]["@radix-ui/react-slot"] = "^1.0.2"
-            package["dependencies"]["class-variance-authority"] = "^0.7.0"
-            package["dependencies"]["clsx"] = "^2.0.0"
-            package["dependencies"]["tailwind-merge"] = "^1.14.0"
+        if config["icons"]:
+            package["dependencies"]["lucide-react"] = "^0.344.0"
+            package["dependencies"]["react-icons"] = "^5.0.1"
             
         return package
 
@@ -141,17 +129,21 @@ class FoundationAgent:
         }
 
     def _generate_vite_config(self, config: Dict) -> str:
-        """Generate vite.config.ts with project configuration."""
+        """Generate vite.config.js with project configuration."""
         return """import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
+import { fileURLToPath } from 'url'
+import { dirname, resolve } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': resolve(__dirname, './src'),
     },
   },
 })"""

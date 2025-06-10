@@ -111,13 +111,11 @@ class PlannerAgent:
             {features_str}
             
             Technical Configuration:
-            - React + TypeScript + Vite setup
-            - Styling: {config.get('styling', 'tailwind')}
-            - State Management: {config.get('state_management', 'None')}
+            - React + JavaScript + Vite setup with Tailwind CSS
+            - State Management: {'Zustand' if config.get('state_management') else 'None'}
             - Routing: {'Enabled' if config.get('routing') else 'Disabled'}
-            - UI Framework: {config.get('ui_framework', 'None')}
+            - Icons: {'Both lucide-react and react-icons' if config.get('icons') else 'Disabled'}
             - Animations: {'Enabled' if config.get('animations') else 'Disabled'}
-            - Developer Tools: {'Enabled' if config.get('dev_tools') else 'Disabled'}
             """
             print(f"[Planner] Formatted requirements:\n{requirements}")
             return requirements

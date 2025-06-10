@@ -6,7 +6,6 @@ from ..agents.planner_agent import PlannerAgent
 from ..agents.foundation_agent import FoundationAgent
 from ..agents.interface_agent import InterfaceAgent
 from ..agents.state_motion_agent import StateMotionAgent
-from ..agents.dev_tools_agent import DevToolsAgent
 from ..services.zip_creator import create_project_zip
 import json
 
@@ -26,7 +25,6 @@ class ProjectOrchestrator:
             self.foundation = FoundationAgent(config_list)
             self.interface = InterfaceAgent(config_list)
             self.state_motion = StateMotionAgent(config_list)
-            self.dev_tools = DevToolsAgent(config_list)
             print("[Orchestrator] All agents initialized successfully")
             
             # Ensure generated directory exists
@@ -167,14 +165,6 @@ class ProjectOrchestrator:
             if await self.state_motion.setup_state_management(config, project_id):
                 self.project_status[project_id]["completed_steps"].append("State management setup completed")
                 print("[Orchestrator] State management setup completed")
-            
-            # Step 5: Set up development tools
-            if config.get("dev_tools"):
-                print("[Orchestrator] Step 5: Setting up development tools")
-                self.project_status[project_id]["current_step"] = "Setting up development tools"
-                if await self.dev_tools.setup_tools(config, project_id):
-                    self.project_status[project_id]["completed_steps"].append("Development tools setup completed")
-                    print("[Orchestrator] Development tools setup completed")
                 
         except Exception as e:
             error_msg = str(e)
