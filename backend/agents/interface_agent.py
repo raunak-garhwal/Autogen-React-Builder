@@ -218,182 +218,128 @@ export default function Header() {
 
     def _generate_button_component(self, config: Dict) -> str:
         """Generate a reusable Button component."""
-        if config.get("ui_framework") == "shadcn":
-            return """import { ButtonHTMLAttributes, forwardRef } from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/utils/cn';
+        return """import React from 'react';
 
-const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'underline-offset-4 hover:underline text-primary',
-      },
-      size: {
-        default: 'h-10 py-2 px-4',
-        sm: 'h-9 px-3 rounded-md',
-        lg: 'h-11 px-8 rounded-md',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
-  }
-);
-
-export interface ButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {}
-
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
-    return (
-      <button
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
-Button.displayName = 'Button';
-
-export { Button, buttonVariants };"""
-        else:
-            return """import { ButtonHTMLAttributes, forwardRef } from 'react';
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
-}
-
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', variant = 'primary', size = 'md', ...props }, ref) => {
+const Button = ({ 
+    children, 
+    className = '', 
+    variant = 'primary', 
+    size = 'md', 
+    ...props 
+}) => {
     const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
     const variants = {
-      primary: 'bg-blue-600 text-white hover:bg-blue-700',
-      secondary: 'bg-gray-600 text-white hover:bg-gray-700',
-      outline: 'border-2 border-gray-300 hover:bg-gray-50'
+        primary: 'bg-blue-600 text-white hover:bg-blue-700',
+        secondary: 'bg-gray-600 text-white hover:bg-gray-700',
+        outline: 'border-2 border-gray-300 hover:bg-gray-50'
     };
     const sizes = {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg'
+        sm: 'px-3 py-1.5 text-sm',
+        md: 'px-4 py-2 text-base',
+        lg: 'px-6 py-3 text-lg'
     };
     
     return (
-      <button
-        ref={ref}
-        className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
-        {...props}
-      />
+        <button
+            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+            {...props}
+        >
+            {children}
+        </button>
     );
-  }
-);
-Button.displayName = 'Button';
+};
 
 export default Button;"""
 
     def _generate_card_component(self, config: Dict) -> str:
         """Generate a reusable Card component."""
-        return """import { ReactNode } from 'react';
+        return """import React from 'react';
 
-interface CardProps {
-  children: ReactNode;
-  className?: string;
-}
+const Card = ({ children, className = '' }) => {
+    return (
+        <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
+            {children}
+        </div>
+    );
+};
 
-export default function Card({ children, className = '' }: CardProps) {
-  return (
-    <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
-      {children}
-    </div>
-  );
-}"""
+export default Card;"""
 
     def _generate_input_component(self, config: Dict) -> str:
         """Generate a reusable Input component."""
-        return """import { InputHTMLAttributes, forwardRef } from 'react';
+        return """import React from 'react';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-}
-
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className = '', label, error, ...props }, ref) => {
+const Input = ({ 
+    className = '', 
+    label, 
+    error, 
+    ...props 
+}) => {
     return (
-      <div className="space-y-2">
-        {label && (
-          <label className="block text-sm font-medium text-gray-700">
-            {label}
-          </label>
-        )}
-        <input
-          ref={ref}
-          className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${className}`}
-          {...props}
-        />
-        {error && (
-          <p className="text-sm text-red-600">{error}</p>
-        )}
-      </div>
+        <div className="space-y-2">
+            {label && (
+                <label className="block text-sm font-medium text-gray-700">
+                    {label}
+                </label>
+            )}
+            <input
+                className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${className}`}
+                {...props}
+            />
+            {error && (
+                <p className="text-sm text-red-600">{error}</p>
+            )}
+        </div>
     );
-  }
-);
-Input.displayName = 'Input';
+};
 
 export default Input;"""
 
     def _generate_home_page(self, config: Dict) -> str:
         """Generate the Home page component."""
-        return """import { motion } from 'framer-motion';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+        return """import React from 'react';
+import { motion } from 'framer-motion';
+import Card from '../components/Card';
+import Button from '../components/Button';
 
-export default function Home() {
-  return (
-    <div className="space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h1 className="text-4xl font-bold">Welcome to {config['project_name']}</h1>
-        <p className="mt-4 text-lg text-gray-600">
-          {config.get('description', 'A modern React application')}
-        </p>
-      </motion.div>
+const Home = () => {
+    return (
+        <div className="space-y-8">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <h1 className="text-4xl font-bold">Welcome to {config['project_name']}</h1>
+                <p className="mt-4 text-lg text-gray-600">
+                    {config.get('description', 'A modern React application')}
+                </p>
+            </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card>
-          <h2 className="text-xl font-semibold mb-4">Feature 1</h2>
-          <p className="text-gray-600">Description of feature 1</p>
-          <Button className="mt-4">Learn More</Button>
-        </Card>
-        
-        <Card>
-          <h2 className="text-xl font-semibold mb-4">Feature 2</h2>
-          <p className="text-gray-600">Description of feature 2</p>
-          <Button variant="secondary" className="mt-4">Learn More</Button>
-        </Card>
-        
-        <Card>
-          <h2 className="text-xl font-semibold mb-4">Feature 3</h2>
-          <p className="text-gray-600">Description of feature 3</p>
-          <Button variant="outline" className="mt-4">Learn More</Button>
-        </Card>
-      </div>
-    </div>
-  );
-}"""
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card>
+                    <h2 className="text-xl font-semibold mb-4">Feature 1</h2>
+                    <p className="text-gray-600">Description of feature 1</p>
+                    <Button className="mt-4">Learn More</Button>
+                </Card>
+                
+                <Card>
+                    <h2 className="text-xl font-semibold mb-4">Feature 2</h2>
+                    <p className="text-gray-600">Description of feature 2</p>
+                    <Button variant="secondary" className="mt-4">Learn More</Button>
+                </Card>
+                
+                <Card>
+                    <h2 className="text-xl font-semibold mb-4">Feature 3</h2>
+                    <p className="text-gray-600">Description of feature 3</p>
+                    <Button variant="outline" className="mt-4">Learn More</Button>
+                </Card>
+            </div>
+        </div>
+    );
+};
+
+export default Home;"""
 
     def _generate_about_page(self, config: Dict) -> str:
         """Generate the About page component."""

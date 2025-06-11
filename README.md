@@ -1,17 +1,16 @@
 # AutoGen React Builder
 
-An intelligent React application generator powered by AutoGen agents that creates modern, production-ready React applications with TypeScript, Vite, and optional features.
+An intelligent React application generator powered by AutoGen agents that creates modern, production-ready React applications with Vite and optional features.
 
 ## Features
 
 - 🤖 AI-powered code generation using AutoGen agents
-- ⚛️ Modern React + TypeScript + Vite setup
+- ⚛️ Modern React + Vite setup
 - 🎨 Tailwind CSS for styling
 - 📦 Optional integrations:
   - Zustand for state management
   - React Router for routing
-  - ShadcnUI components
-  - Monaco Editor
+  - Modern UI Components
   - Framer Motion animations
 
 ## Project Structure
@@ -59,11 +58,10 @@ autogen-react-builder/
 
 ## Generated Project Features
 
-- Modern React 18+ setup with TypeScript and Vite
+- Modern React 18+ setup with Vite
 - Tailwind CSS for styling
 - Optional features:
   - State management with Zustand
   - Routing with React Router
-  - UI components with ShadcnUI
-  - Code editing with Monaco Editor
+  - Custom UI Components
   - Animations with Framer Motion
