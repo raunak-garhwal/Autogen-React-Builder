@@ -59,9 +59,9 @@ class InterfaceAgent:
         """Create layout components like Header, Footer, Layout."""
         try:
             components = {
-                "Layout.tsx": self._generate_layout_component(config),
-                "Header.tsx": self._generate_header_component(config),
-                "Footer.tsx": self._generate_footer_component(config)
+                "Layout.jsx": self._generate_layout_component(config),
+                "Header.jsx": self._generate_header_component(config),
+                "Footer.jsx": self._generate_footer_component(config)
             }
             
             layout_dir = os.path.join(project_dir, "src", "components", "layout")
@@ -79,9 +79,9 @@ class InterfaceAgent:
         """Create common UI components based on configuration."""
         try:
             components = {
-                "Button.tsx": self._generate_button_component(config),
-                "Card.tsx": self._generate_card_component(config),
-                "Input.tsx": self._generate_input_component(config)
+                "Button.jsx": self._generate_button_component(config),
+                "Card.jsx": self._generate_card_component(config),
+                "Input.jsx": self._generate_input_component(config)
             }
             
             ui_dir = os.path.join(project_dir, "src", "components", "ui")
@@ -124,22 +124,20 @@ class InterfaceAgent:
         feature_name = "".join(word.capitalize() for word in feature.split("_"))
         
         # Create index file
-        components["index.ts"] = f"export * from './{feature_name}';\n"
+        components["index.js"] = f"export * from './{feature_name}';\n"
         
         # Create main feature component
-        components[f"{feature_name}.tsx"] = (
-            f"import {{ FC }} from 'react';\n\n"
-            f"interface {feature_name}Props {{\n"
-            "  // Add props here\n"
-            "}\n\n"
-            f"export const {feature_name}: FC<{feature_name}Props> = () => {{\n"
-            "  return (\n"
-            '    <div className="p-4">\n'
-            f'      <h2 className="text-2xl font-bold mb-4">{feature_name}</h2>\n'
-            "      {/* Add feature-specific content here */}\n"
-            "    </div>\n"
-            "  );\n"
-            "};\n"
+        components[f"{feature_name}.jsx"] = (
+            f"import React from 'react';\n\n"
+            f"const {feature_name} = (props) => {{\n"
+            f"  return (\n"
+            f"    <div className=\"p-4\">\n"
+            f"      <h2 className=\"text-2xl font-bold mb-4\">{feature_name}</h2>\n"
+            f"      {{/* Add your component content here */}}\n"
+            f"    </div>\n"
+            f"  );\n"
+            f"}};\n\n"
+            f"export default {feature_name};"
         )
         
         return components
@@ -151,9 +149,9 @@ class InterfaceAgent:
             os.makedirs(pages_dir, exist_ok=True)
             
             pages = {
-                "Home.tsx": self._generate_home_page(config),
-                "About.tsx": self._generate_about_page(config),
-                "NotFound.tsx": self._generate_not_found_page(config)
+                "Home.jsx": self._generate_home_page(config),
+                "About.jsx": self._generate_about_page(config),
+                "NotFound.jsx": self._generate_not_found_page(config)
             }
             
             for filename, content in pages.items():
@@ -170,11 +168,7 @@ class InterfaceAgent:
 import Header from './Header';
 import Footer from './Footer';
 
-interface LayoutProps {
-  children: ReactNode;
-}
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

@@ -70,8 +70,6 @@ class FoundationAgent:
                 "react-dom": "^18.2.0"
             },
             "devDependencies": {
-                "@types/react": "^18.2.15",
-                "@types/react-dom": "^18.2.7",
                 "@vitejs/plugin-react": "^4.0.3",
                 "eslint": "^8.45.0",
                 "eslint-plugin-react": "^7.32.2",
@@ -100,34 +98,6 @@ class FoundationAgent:
             
         return package
 
-    def _generate_tsconfig(self) -> Dict:
-        """Generate tsconfig.json with React + TypeScript configuration."""
-        return {
-            "compilerOptions": {
-                "target": "ES2020",
-                "useDefineForClassFields": True,
-                "lib": ["ES2020", "DOM", "DOM.Iterable"],
-                "module": "ESNext",
-                "skipLibCheck": True,
-                "moduleResolution": "bundler",
-                "allowImportingTsExtensions": True,
-                "resolveJsonModule": True,
-                "isolatedModules": True,
-                "noEmit": True,
-                "jsx": "react-jsx",
-                "strict": True,
-                "noUnusedLocals": True,
-                "noUnusedParameters": True,
-                "noFallthroughCasesInSwitch": True,
-                "baseUrl": ".",
-                "paths": {
-                    "@/*": ["src/*"]
-                }
-            },
-            "include": ["src"],
-            "references": [{ "path": "./tsconfig.node.json" }]
-        }
-
     def _generate_vite_config(self, config: Dict) -> str:
         """Generate vite.config.js with project configuration."""
         return """import { defineConfig } from 'vite'
@@ -138,7 +108,6 @@ import { dirname, resolve } from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
