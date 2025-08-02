@@ -1,0 +1,321 @@
+{
+  "provider": "autogen_agentchat.teams.RoundRobinGroupChat",
+  "component_type": "team",
+  "version": 1,
+  "component_version": 1,
+  "description": "A team of agents to create react project using user prompt.",
+  "label": "React_Builder_Team",
+  "config": {
+    "participants": [
+      {
+        "provider": "autogen_agentchat.agents.AssistantAgent",
+        "component_type": "agent",
+        "version": 1,
+        "component_version": 1,
+        "description": "An agent that creates the project structure for the react application.",
+        "label": "Planner_Agent",
+        "config": {
+          "name": "planner_agent",
+          "model_client": {
+            "provider": "autogen_ext.models.openai.OpenAIChatCompletionClient",
+            "component_type": "model",
+            "version": 1,
+            "component_version": 1,
+            "description": "OpenAI GPT-4o-mini",
+            "label": "Gemini Model",
+            "config": {
+              "model": "gemini-2.0-flash",
+              "api_key": "AIzaSyD0mNXazJZPGILlk-e-bqLX1gnlCgbGSws"
+            }
+          },
+          "tools": [],
+          "model_context": {
+            "provider": "autogen_core.model_context.UnboundedChatCompletionContext",
+            "component_type": "chat_completion_context",
+            "version": 1,
+            "component_version": 1,
+            "description": "An unbounded chat completion context that keeps a view of the all the messages.",
+            "label": "UnboundedChatCompletionContext",
+            "config": {}
+          },
+          "description": "An agent that provides assistance with ability to use tools.",
+          "system_message": "You are PlannerAgent. Your role is to analyze user input (project description or goal) and generate a full project scaffolding plan for a React application using **Vite + JavaScript (not TypeScript)** with **Tailwind CSS v4+** and **Framer Motion** as standard dependencies. Structure your output as a JSON object containing: 1. **projectName** – A clean project name (e.g., \"todo-app\", \"weather-dashboard\") 2. **folders** – A list of folder paths that must exist relative to the project root (e.g., \"src/components\", \"src/hooks\", \"src/utils\", \"src/animations\") 3. **files** – A list of files to modify/create after Vite scaffolding, each with: - `path`: relative file path from project root (e.g., \"src/components/TodoList.jsx\") - `description`: short explanation of its purpose - `required`: boolean indicating if this file is critical for the app to work 4. **dependencies** – npm packages to install beyond Vite defaults. **ALWAYS INCLUDE THESE STANDARD DEPENDENCIES:** - \"tailwindcss\": \"^4.0.0\" (Tailwind CSS v4 - MANDATORY) - \"@tailwindcss/vite\": \"^4.0.0\" (Tailwind CSS v4 Vite plugin - MANDATORY) - \"framer-motion\": \"^11.0.0\" (for animations - MANDATORY) - \"react\": \"^18.2.0\" (ensure react appears in package.json explicitly) - \"react-dom\": \"^18.2.0\" (ensure react-dom appears in package.json explicitly) - Additional project-specific dependencies (e.g., uuid, axios, etc.) 5. **devDependencies** – additional development packages if needed 6. **commands** – step-by-step terminal commands INCLUDING dependency installation: - `npx create-vite@latest {projectName} --template react` - `cd {projectName}` - `npm install` (MANDATORY - must be included) - `npm install tailwindcss @tailwindcss/vite framer-motion` (MANDATORY - must be included) - Additional dependency installations as needed 7. **tailwindSetup** – Tailwind CSS v4 setup requirements: - Must update `vite.config.js` to include @tailwindcss/vite plugin - Must add `@import \"tailwindcss\"` to `src/index.css` - NO config file needed (v4 uses CSS-first approach) 8. **framerMotionSetup** – Framer Motion integration requirements: - Include example motion components - Add animation utilities folder - Include common animation presets 9. **buildPlan** – what to do if the app build fails 10. **successCriteria** – list of observable outcomes that confirm the app works with Tailwind and Framer Motion **MANDATORY REQUIREMENTS:** - **ALWAYS** include both tailwindcss and @tailwindcss/vite in dependencies - **ALWAYS** include Framer Motion in dependencies - **ALWAYS** include \"react\": \"^18.2.0\" and \"react-dom\": \"^18.2.0\" in dependencies - **ALWAYS** add \"src/animations\" folder for motion utilities - **ALWAYS** add \"src/components\" folder for React components - **ALWAYS** plan for Vite config modification - **NO tailwind.config.js file** (v4 doesn't need it) - **ALWAYS** include specific component files that will replace the default Vite app - **ALWAYS** mark component files as \"required\": true so they get created - Ensure all components include correct import/export syntax to avoid default app state or broken routing **IMPORTANT:** - The projectName should be a valid folder name (lowercase, hyphens, no spaces) - List ALL necessary folders in the 'folders' array (especially src/components, src/hooks, src/animations, etc.) - Ensure all file paths in the 'files' array are relative to the project root folder - **MUST** include `npm install` commands in the commands array - Include src/animations folder for Framer Motion utilities - **MUST** include actual component files that will be imported in App.jsx - Mark all component files as \"required\": true DO NOT use `create-react-app`. Only use Vite with the `react` template. Ensure the output is accurate, complete, and follows modern React + Tailwind v4 + Framer Motion best practices.CRITICAL HANDOFF REQUIREMENT: When your planning is 100% complete, end your final message with exactly: 'PLANNER_COMPLETE - Ready for code generation', Do NOT send any more messages after this signal. This tells CodeWriterAgent to begin work.",
+          "model_client_stream": false,
+          "reflect_on_tool_use": false,
+          "tool_call_summary_format": "{result}"
+        }
+      },
+      {
+        "provider": "autogen_agentchat.agents.AssistantAgent",
+        "component_type": "agent",
+        "version": 1,
+        "component_version": 1,
+        "description": "An agent that writes modern react code with ability to use tools.",
+        "label": "React_Code_Writer_Agent",
+        "config": {
+          "name": "react_code_writer_agent",
+          "model_client": {
+            "provider": "autogen_ext.models.openai.OpenAIChatCompletionClient",
+            "component_type": "model",
+            "version": 1,
+            "component_version": 1,
+            "description": "OpenAI GPT-4o-mini",
+            "label": "Gemini Model",
+            "config": {
+              "model": "gemini-2.0-flash",
+              "api_key": "AIzaSyD0mNXazJZPGILlk-e-bqLX1gnlCgbGSws"
+            }
+          },
+          "tools": [
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "This tool creates files in the workspace based on the agent's instructions.",
+              "label": "write_file",
+              "config": {
+                "source_code": "def write_file(path: str, content: str) -> dict:\n    \"\"\"Writes content to the given file path.\"\"\"\n    import os\n\n    os.makedirs(os.path.dirname(path), exist_ok=True)\n    with open(path, \"w\", encoding=\"utf-8\") as f:\n        f.write(content)\n\n    return {\"status\": \"success\", \"path\": path}\n",
+                "name": "write_file",
+                "description": "A simple calculator that performs basic arithmetic operations",
+                "global_imports": [],
+                "has_cancellation_support": false
+              }
+            },
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "This tool executes terminal commands.",
+              "label": "run_shell",
+              "config": {
+                "source_code": "def run_shell(command: str) -> dict:\n    \"\"\"Executes a shell command and returns stdout, stderr, and return code.\"\"\"\n    import subprocess\n\n    result = subprocess.run(command, shell=True, capture_output=True, text=True)\n\n    return {\n        \"stdout\": result.stdout,\n        \"stderr\": result.stderr,\n        \"returncode\": result.returncode\n    }\n",
+                "name": "run_shell",
+                "description": "A simple calculator that performs basic arithmetic operations",
+                "global_imports": [],
+                "has_cancellation_support": false
+              }
+            }
+          ],
+          "model_context": {
+            "provider": "autogen_core.model_context.UnboundedChatCompletionContext",
+            "component_type": "chat_completion_context",
+            "version": 1,
+            "component_version": 1,
+            "description": "An unbounded chat completion context that keeps a view of the all the messages.",
+            "label": "UnboundedChatCompletionContext",
+            "config": {}
+          },
+          "description": "An agent that provides assistance with ability to use tools.",
+          "system_message": "You are CodeWriterAgent. You receive a JSON project plan from PlannerAgent and execute it step by step with **automatic Tailwind CSS v4+** and **Framer Motion** integration. **CRITICAL WORKFLOW:** 1. **FIRST**: Execute ALL shell commands from the plan to set up the Vite project structure **INCLUDING npm install commands** 2. **SECOND**: Create ALL folders specified in the plan 3. **THIRD**: Install and configure Tailwind CSS v4+ and Framer Motion automatically 4. **FOURTH**: Write/modify ALL files specified in the plan, prioritizing \"required\": true files **Step 1 - Project Setup:** For each command in the 'commands' array, use `run_shell(command)` in order: - `npx create-vite@latest {projectName} --template react` - `cd {projectName}` - `npm install` (MANDATORY - must execute this) - `npm install tailwindcss @tailwindcss/vite framer-motion` (MANDATORY - must execute this) - Any additional dependency installations from the plan **Step 2 - Folder Creation:** For each folder in the 'folders' array from the plan, use `run_shell(\"mkdir -p {projectName}/{folder}\")` to ensure all directories exist **Step 3 - Tailwind CSS v4+ Configuration (AUTOMATIC):** 1. **Update vite.config.js** to include Tailwind plugin: ```javascript import { defineConfig } from 'vite' import react from '@vitejs/plugin-react' import tailwindcss from '@tailwindcss/vite' export default defineConfig({ plugins: [react(), tailwindcss()], }) ``` 2. **Update src/index.css** with Tailwind import (v4 syntax): ```css @import \"tailwindcss\"; /* Your custom styles here */ ``` **NO CONFIG FILE NEEDED** - Tailwind v4 works without tailwind.config.js **Step 4 - Framer Motion Setup (AUTOMATIC):** 1. **Create src/animations/index.js** with common animation presets: ```javascript export const fadeIn = { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } }; export const slideIn = { initial: { x: -100, opacity: 0 }, animate: { x: 0, opacity: 1 }, exit: { x: 100, opacity: 0 } }; export const scaleIn = { initial: { scale: 0.8, opacity: 0 }, animate: { scale: 1, opacity: 1 }, exit: { scale: 0.8, opacity: 0 } }; ``` **Step 5 - File Writing (CRITICAL):** For each file in the 'files' array from PlannerAgent, use `write_file(path, content)` where: - `path` should be: `{projectName}/{file.path}` (e.g., \"todo-app/src/components/TodoList.jsx\") - `content` should be complete, functional React code with Tailwind classes and Framer Motion - **PRIORITIZE files marked as \"required\": true** - **ENSURE ALL component files are created** **React + Tailwind + Framer Motion Best Practices:** - Use functional components with hooks (`useState`, `useEffect`) - **ALWAYS** use Tailwind CSS classes for styling (no custom CSS unless necessary) - **INCLUDE** Framer Motion animations where appropriate using `motion` components - Import motion from framer-motion: `import { motion } from 'framer-motion'` - Use animation presets from `src/animations/index.js` - Ensure proper imports/exports - Write complete, self-contained components - Follow Vite project structure - Use modern Tailwind v4 syntax and features **Tailwind CSS Integration Rules:** - **NEVER** write custom CSS - use Tailwind classes - Use responsive design with Tailwind breakpoints (sm:, md:, lg:, xl:) - Utilize Tailwind's color palette and spacing system - Apply hover, focus, and active states with Tailwind utilities **Framer Motion Integration Rules:** - Wrap components with `motion.div`, `motion.button`, etc. - Use animation variants from `src/animations/index.js` - Add smooth transitions and micro-interactions - Include layout animations where appropriate - Use `AnimatePresence` for enter/exit animations **MANDATORY EXECUTION STEPS:** 1. Execute ALL commands from the plan (including npm install commands) 2. Create ALL folders from the plan 3. Update vite.config.js to include @tailwindcss/vite plugin 4. Update src/index.css with @import \"tailwindcss\" 5. Create src/animations/index.js with motion presets 6. Write ALL files from the plan, especially those marked as \"required\": true 7. Update src/App.jsx to import and use the created components 8. **ENSURE** \"react\", \"react-dom\", \"tailwindcss\", and \"@tailwindcss/vite\" are present in package.json 9. **FIX** any missing or incorrect import/export in component files to prevent blank default app state **Important:** - Always execute shell commands INCLUDING npm install commands - All file paths must be relative to the project folder created by Vite - Create EVERY file listed in the plan's 'files' array - Ensure components are properly imported in App.jsx - Test that the project structure follows the plan exactlyCRITICAL HANDOFF REQUIREMENT: Wait for 'PLANNER_COMPLETE' signal before starting any work. When all files are written and configured, end your final message with exactly: 'CODE_COMPLETE - All files created successfully', Do NOT send any more messages after this signal. This tells ValidatorAgent to begin validation.",
+          "model_client_stream": false,
+          "reflect_on_tool_use": false,
+          "tool_call_summary_format": "{result}"
+        }
+      },
+      {
+        "provider": "autogen_agentchat.agents.AssistantAgent",
+        "component_type": "agent",
+        "version": 1,
+        "component_version": 1,
+        "description": "An agent that validates the project structure against the original plan.",
+        "label": "Validator_Agent",
+        "config": {
+          "name": "validator_agent",
+          "model_client": {
+            "provider": "autogen_ext.models.openai.OpenAIChatCompletionClient",
+            "component_type": "model",
+            "version": 1,
+            "component_version": 1,
+            "description": "OpenAI GPT-4o-mini",
+            "label": "Gemini Model",
+            "config": {
+              "model": "gemini-2.0-flash",
+              "api_key": "AIzaSyD0mNXazJZPGILlk-e-bqLX1gnlCgbGSws"
+            }
+          },
+          "tools": [
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "Enhanced tool that checks if a file or folder exists with detailed information.",
+              "label": "check_path",
+              "config": {
+                "source_code": "def check_path(path: str) -> dict:\n    \"\"\"Checks if a file or folder exists at the given path with detailed info.\"\"\"\n    import os\n    import stat\n    \n    try:\n        exists = os.path.exists(path)\n        \n        if not exists:\n            return {\n                \"path\": path,\n                \"exists\": False,\n                \"is_file\": False,\n                \"is_directory\": False,\n                \"size\": 0,\n                \"error\": None\n            }\n        \n        is_file = os.path.isfile(path)\n        is_dir = os.path.isdir(path)\n        size = os.path.getsize(path) if is_file else 0\n        \n        # Additional checks for file integrity\n        permissions = oct(stat.S_IMODE(os.stat(path).st_mode))\n        \n        return {\n            \"path\": path,\n            \"exists\": True,\n            \"is_file\": is_file,\n            \"is_directory\": is_dir,\n            \"size\": size,\n            \"permissions\": permissions,\n            \"readable\": os.access(path, os.R_OK),\n            \"writable\": os.access(path, os.W_OK),\n            \"error\": None\n        }\n    except Exception as e:\n        return {\n            \"path\": path,\n            \"exists\": False,\n            \"is_file\": False,\n            \"is_directory\": False,\n            \"size\": 0,\n            \"error\": str(e)\n        }\n",
+                "name": "check_path",
+                "description": "Enhanced tool to check if files and folders exist with detailed information",
+                "global_imports": [],
+                "has_cancellation_support": false
+              }
+            },
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "Enhanced tool that lists contents of a directory with detailed information.",
+              "label": "list_directory",
+              "config": {
+                "source_code": "def list_directory(path: str, recursive: bool = False) -> dict:\n    \"\"\"Lists the contents of a directory with enhanced information.\"\"\"\n    import os\n    \n    if not os.path.exists(path):\n        return {\"status\": \"error\", \"message\": f\"Path '{path}' does not exist\", \"path\": path}\n    \n    if not os.path.isdir(path):\n        return {\"status\": \"error\", \"message\": f\"Path '{path}' is not a directory\", \"path\": path}\n    \n    try:\n        contents = []\n        files = []\n        directories = []\n        \n        for item in os.listdir(path):\n            item_path = os.path.join(path, item)\n            \n            if os.path.isfile(item_path):\n                size = os.path.getsize(item_path)\n                files.append({\"name\": item, \"size\": size, \"path\": item_path})\n            elif os.path.isdir(item_path):\n                # Count items in subdirectory\n                try:\n                    subdir_count = len(os.listdir(item_path))\n                except:\n                    subdir_count = 0\n                directories.append({\"name\": item, \"items\": subdir_count, \"path\": item_path})\n        \n        # If recursive, get subdirectory contents too\n        subdirectory_tree = {}\n        if recursive:\n            for dir_info in directories:\n                sub_result = list_directory(dir_info[\"path\"], recursive=False)\n                if sub_result[\"status\"] == \"success\":\n                    subdirectory_tree[dir_info[\"name\"]] = sub_result\n        \n        return {\n            \"status\": \"success\",\n            \"path\": path,\n            \"files\": files,\n            \"directories\": directories,\n            \"total_files\": len(files),\n            \"total_directories\": len(directories),\n            \"total_items\": len(files) + len(directories),\n            \"subdirectory_tree\": subdirectory_tree if recursive else None\n        }\n    except Exception as e:\n        return {\"status\": \"error\", \"message\": str(e), \"path\": path}\n",
+                "name": "list_directory",
+                "description": "Enhanced tool to list directory contents with detailed information",
+                "global_imports": [],
+                "has_cancellation_support": false
+              }
+            },
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "Tool to validate file contents and structure.",
+              "label": "validate_file_content",
+              "config": {
+                "source_code": "def validate_file_content(file_path: str, expected_type: str = None) -> dict:\n    \"\"\"Validates file content and checks for common issues.\"\"\"\n    import os\n    import json\n    \n    if not os.path.exists(file_path):\n        return {\"status\": \"error\", \"message\": f\"File '{file_path}' does not exist\"}\n    \n    if not os.path.isfile(file_path):\n        return {\"status\": \"error\", \"message\": f\"Path '{file_path}' is not a file\"}\n    \n    try:\n        with open(file_path, 'r', encoding='utf-8') as f:\n            content = f.read()\n        \n        file_ext = os.path.splitext(file_path)[1].lower()\n        content_length = len(content)\n        lines_count = content.count('\\n') + 1\n        \n        validation_result = {\n            \"status\": \"success\",\n            \"file_path\": file_path,\n            \"file_extension\": file_ext,\n            \"content_length\": content_length,\n            \"lines_count\": lines_count,\n            \"is_empty\": content_length == 0,\n            \"encoding\": \"utf-8\",\n            \"issues\": []\n        }\n        \n        # Specific validations based on file type\n        if file_ext == '.json':\n            try:\n                json.loads(content)\n                validation_result[\"json_valid\"] = True\n            except json.JSONDecodeError as e:\n                validation_result[\"json_valid\"] = False\n                validation_result[\"issues\"].append(f\"Invalid JSON: {str(e)}\")\n        \n        elif file_ext in ['.js', '.jsx']:\n            # Basic JavaScript/JSX validation\n            if 'import' in content or 'export' in content:\n                validation_result[\"has_imports_exports\"] = True\n            else:\n                validation_result[\"has_imports_exports\"] = False\n            \n            if file_ext == '.jsx':\n                if 'React' in content or 'jsx' in content or '<' in content:\n                    validation_result[\"appears_jsx\"] = True\n                else:\n                    validation_result[\"appears_jsx\"] = False\n                    validation_result[\"issues\"].append(\"JSX file doesn't appear to contain JSX syntax\")\n        \n        elif file_ext == '.html':\n            if '<!DOCTYPE' in content and '<html' in content:\n                validation_result[\"valid_html_structure\"] = True\n            else:\n                validation_result[\"valid_html_structure\"] = False\n                validation_result[\"issues\"].append(\"Missing DOCTYPE or html tag\")\n        \n        elif file_ext == '.css':\n            # Basic CSS validation\n            if '{' in content and '}' in content:\n                validation_result[\"has_css_rules\"] = True\n            else:\n                validation_result[\"has_css_rules\"] = False\n        \n        return validation_result\n        \n    except Exception as e:\n        return {\"status\": \"error\", \"message\": f\"Error reading file: {str(e)}\"}\n",
+                "name": "validate_file_content",
+                "description": "Tool to validate file contents and check for common issues",
+                "global_imports": [],
+                "has_cancellation_support": false
+              }
+            },
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "Tool to validate React project structure comprehensively.",
+              "label": "validate_react_project",
+              "config": {
+                "source_code": "def validate_react_project(project_path: str) -> dict:\n    \"\"\"Comprehensive validation of React project structure.\"\"\"\n    import os\n    import json\n    \n    validation_result = {\n        \"status\": \"success\",\n        \"project_path\": project_path,\n        \"issues\": [],\n        \"warnings\": [],\n        \"critical_files_check\": {},\n        \"structure_validation\": {}\n    }\n    \n    if not os.path.exists(project_path):\n        validation_result[\"status\"] = \"error\"\n        validation_result[\"issues\"].append(f\"Project directory '{project_path}' does not exist\")\n        return validation_result\n    \n    # Critical files that must exist in a Vite React project\n    critical_files = {\n        \"package.json\": \"Package configuration file\",\n        \"index.html\": \"Main HTML file\",\n        \"vite.config.js\": \"Vite configuration file\",\n        \"src/main.jsx\": \"Main React entry point\",\n        \"src/App.jsx\": \"Main App component\",\n        \"src/App.css\": \"App styles\",\n        \"src/index.css\": \"Global styles\"\n    }\n    \n    # Check critical files\n    for file_path, description in critical_files.items():\n        full_path = os.path.join(project_path, file_path)\n        exists = os.path.exists(full_path)\n        validation_result[\"critical_files_check\"][file_path] = {\n            \"exists\": exists,\n            \"description\": description,\n            \"path\": full_path\n        }\n        \n        if not exists:\n            validation_result[\"issues\"].append(f\"Missing critical file: {file_path} ({description})\")\n    \n    # Check package.json validity\n    package_json_path = os.path.join(project_path, \"package.json\")\n    if os.path.exists(package_json_path):\n        try:\n            with open(package_json_path, 'r') as f:\n                package_data = json.load(f)\n            \n            # Check for required fields and scripts\n            required_fields = [\"name\", \"version\", \"scripts\", \"dependencies\"]\n            for field in required_fields:\n                if field not in package_data:\n                    validation_result[\"warnings\"].append(f\"package.json missing field: {field}\")\n            \n            # Check for Vite-specific scripts\n            if \"scripts\" in package_data:\n                required_scripts = [\"dev\", \"build\", \"preview\"]\n                for script in required_scripts:\n                    if script not in package_data[\"scripts\"]:\n                        validation_result[\"warnings\"].append(f\"Missing script in package.json: {script}\")\n            \n            # Check for React dependencies\n            if \"dependencies\" in package_data:\n                if \"react\" not in package_data[\"dependencies\"]:\n                    validation_result[\"issues\"].append(\"React dependency missing from package.json\")\n                if \"react-dom\" not in package_data[\"dependencies\"]:\n                    validation_result[\"issues\"].append(\"React-dom dependency missing from package.json\")\n        \n        except json.JSONDecodeError:\n            validation_result[\"issues\"].append(\"package.json is not valid JSON\")\n        except Exception as e:\n            validation_result[\"issues\"].append(f\"Error reading package.json: {str(e)}\")\n    \n    # Check directory structure\n    expected_dirs = [\"src\", \"public\", \"node_modules\"]\n    for dir_name in expected_dirs:\n        dir_path = os.path.join(project_path, dir_name)\n        exists = os.path.exists(dir_path) and os.path.isdir(dir_path)\n        validation_result[\"structure_validation\"][dir_name] = exists\n        \n        if not exists and dir_name != \"node_modules\":  # node_modules might not exist before npm install\n            validation_result[\"issues\"].append(f\"Missing directory: {dir_name}\")\n    \n    # Set final status\n    if validation_result[\"issues\"]:\n        validation_result[\"status\"] = \"failed\"\n    elif validation_result[\"warnings\"]:\n        validation_result[\"status\"] = \"warning\"\n    \n    return validation_result\n",
+                "name": "validate_react_project",
+                "description": "Comprehensive React project structure validation",
+                "global_imports": [],
+                "has_cancellation_support": false
+              }
+            }
+          ],
+          "model_context": {
+            "provider": "autogen_core.model_context.UnboundedChatCompletionContext",
+            "component_type": "chat_completion_context",
+            "version": 1,
+            "component_version": 1,
+            "description": "An unbounded chat completion context that keeps a view of the all the messages.",
+            "label": "UnboundedChatCompletionContext",
+            "config": {}
+          },
+          "description": "An agent that provides assistance with ability to use tools.",
+          "system_message": "You are ValidatorAgent - An advanced React project validation specialist.\\n\\nYour mission is to perform comprehensive validation of React projects against the original plan from PlannerAgent, ensuring structural integrity, file validity, and React-specific requirements.\\n\\n**WAIT FOR CodeWriterAgent to complete ALL work before starting validation.**\\n\\n**COMPREHENSIVE VALIDATION WORKFLOW:**\\n\\n**Phase 1: Project Structure Validation**\\n1. Use `validate_react_project(project_path)` for comprehensive React project validation\\n2. Use `check_path(path)` for detailed file/folder existence checks\\n3. Use `list_directory(path, recursive=True)` for complete project structure analysis\\n\\n**Phase 2: File Content Validation**\\n1. Use `validate_file_content(file_path, expected_type)` for each critical file:\\n   - package.json (JSON validation)\\n   - React components (.jsx files)\\n   - HTML files\\n   - CSS files\\n   - Configuration files\\n\\n**Phase 3: Plan Compliance Check**\\n1. **Verify ALL planned folders exist** from PlannerAgent's 'folders' array\\n2. **Verify ALL planned files exist** from PlannerAgent's 'files' array\\n3. **Cross-reference** actual structure vs planned structure\\n4. **Check for missing dependencies** specified in the plan\\n\\n**Phase 4: React-Specific Validation**\\n1. **Vite Configuration**: Ensure vite.config.js exists and is valid\\n2. **Package.json**: Validate React dependencies, scripts, and Vite setup\\n3. **Entry Points**: Verify main.jsx and App.jsx exist and contain valid React code\\n4. **Component Structure**: Check that JSX files contain proper React syntax\\n5. **Asset Files**: Verify CSS, HTML, and other assets are properly structured\\n\\n**ENHANCED VALIDATION CRITERIA:**\\n\\n**CRITICAL REQUIREMENTS (Must Pass):**\\n- Project folder exists\\n- All planned folders from PlannerAgent exist\\n- All planned files from PlannerAgent exist\\n- package.json is valid JSON with required fields\\n- React and React-DOM dependencies present\\n- Main entry points (main.jsx, App.jsx) exist\\n- Vite configuration exists\\n\\n**WARNING LEVEL (Should Pass):**\\n- File contents are not empty\\n- JSX files contain valid React syntax\\n- CSS files contain valid CSS\\n- All dependencies from plan are in package.json\\n- Required npm scripts exist (dev, build, preview)\\n\\n**DETAILED VALIDATION REPORT FORMAT:**\\n```\\n COMPREHENSIVE VALIDATION REPORT\\n=================================\\n\\n PROJECT STRUCTURE:\\n/ Project folder: {projectName}\\n/ Critical directories: {status of each}\\n Planned folders: {detailed status}\\n\\n FILE VALIDATION:\\n Critical files: {detailed status with sizes}\\n Planned files: {detailed status}\\n Content validation: {file-by-file analysis}\\n\\nREACT-SPECIFIC CHECKS:\\n package.json validity: {detailed analysis}\\n Vite configuration: {status}\\n React dependencies: {version info}\\n Component structure: {JSX validation results}\\n Entry points: {main.jsx, App.jsx analysis}\\n\\n SUMMARY:\\n- Total files checked: {count}\\n- Critical issues: {count}\\n- Warnings: {count}\\n- Plan compliance: {percentage}%\\n\\nSTATUS: [APPROVED / REJECTED / NEEDS_FIXES]\\n\\n{If REJECTED or NEEDS_FIXES, provide detailed remediation steps}\\n```\\n\\n**DECISION LOGIC:**\\n- **APPROVED**: All critical requirements met, no critical issues\\n- **NEEDS_FIXES**: Some issues found but fixable, provide specific instructions\\n- **REJECTED**: Major structural problems, request complete rebuild\\n\\n**TOOLS AVAILABLE:**\\n- `validate_react_project(project_path)`: Comprehensive React project validation\\n- `check_path(path)`: Enhanced file/folder existence check with details\\n- `list_directory(path, recursive=bool)`: Detailed directory listing\\n- `validate_file_content(file_path, expected_type)`: File content validation\\n\\n**ERROR HANDLING:**\\n- Always handle tool errors gracefully\\n- Provide specific error messages and suggested fixes\\n- Never approve a project with unresolved critical issues\\n- Always reference the original plan from PlannerAgent\\n\\n**COMMUNICATION:**\\n- Be thorough but concise in reporting\\n- Use emojis and formatting for clarity\\n- Provide actionable feedback for CodeWriterAgent\\n- Only pass control to ExecutorAgent when validation is APPROVED. CRITICAL HANDOFF REQUIREMENT: Wait for 'CODE_COMPLETE' signal before starting validation. When validation is finished, end your final message with exactly: 'VALIDATION_COMPLETE - Project approved for packaging' OR 'VALIDATION_FAILED - Issues found, rebuild required', Do NOT send any more messages after this signal. This tells ExecutorAgent to proceed or stop.",
+          "model_client_stream": false,
+          "reflect_on_tool_use": false,
+          "tool_call_summary_format": "{result}"
+        }
+      },
+      {
+        "provider": "autogen_agentchat.agents.AssistantAgent",
+        "component_type": "agent",
+        "version": 1,
+        "component_version": 1,
+        "description": "An agent that execute shell commands and zip the React project folder once it's generated.",
+        "label": "Executor_Agent",
+        "config": {
+          "name": "executor_agent",
+          "model_client": {
+            "provider": "autogen_ext.models.openai.OpenAIChatCompletionClient",
+            "component_type": "model",
+            "version": 1,
+            "component_version": 1,
+            "description": "OpenAI GPT-4o-mini",
+            "label": "Gemini Model",
+            "config": {
+              "model": "gemini-2.0-flash",
+              "api_key": "AIzaSyD0mNXazJZPGILlk-e-bqLX1gnlCgbGSws"
+            }
+          },
+          "tools": [
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "A tool that compress the project folder into a zip file.",
+              "label": "zip_project",
+              "config": {
+                "source_code": "def zip_project(folder_path: str, output_zip: str = None) -> dict:\n    import shutil, os\n\n    if not os.path.isdir(folder_path):\n        return {\"status\": \"error\", \"message\": f\"Folder '{folder_path}' not found\"}\n\n    # Create zip file name\n    if not output_zip:\n        output_zip = folder_path.rstrip(os.sep) + \".zip\"\n    elif not output_zip.endswith(\".zip\"):\n        output_zip += \".zip\"\n\n    base_name = os.path.splitext(output_zip)[0]\n    root_dir = os.path.dirname(folder_path) or \".\"\n    base_dir = os.path.basename(folder_path)\n\n    shutil.make_archive(base_name=base_name, format=\"zip\", root_dir=root_dir, base_dir=base_dir)\n\n    return {\"status\": \"success\", \"zip_path\": output_zip}\n",
+                "name": "zip_project",
+                "description": "A simple calculator that performs basic arithmetic operations",
+                "global_imports": [],
+                "has_cancellation_support": false
+              }
+            },
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "This tool executes terminal commands.",
+              "label": "run_shell",
+              "config": {
+                "source_code": "def run_shell(command: str) -> dict:\n    \"\"\"Executes a shell command and returns stdout, stderr, and return code.\"\"\"\n    import subprocess\n\n    result = subprocess.run(command, shell=True, capture_output=True, text=True)\n\n    return {\n        \"stdout\": result.stdout,\n        \"stderr\": result.stderr,\n        \"returncode\": result.returncode\n    }\n",
+                "name": "run_shell",
+                "description": "A simple calculator that performs basic arithmetic operations",
+                "global_imports": [],
+                "has_cancellation_support": false
+              }
+            }
+          ],
+          "model_context": {
+            "provider": "autogen_core.model_context.UnboundedChatCompletionContext",
+            "component_type": "chat_completion_context",
+            "version": 1,
+            "component_version": 1,
+            "description": "An unbounded chat completion context that keeps a view of the all the messages.",
+            "label": "UnboundedChatCompletionContext",
+            "config": {}
+          },
+          "description": "An agent that provides assistance with ability to use tools.",
+          "system_message": "You are ExecutorAgent.\\n\\nYour job is to finalize the React project by creating a zip file of the complete project folder.\\n\\n**Wait for ValidatorAgent to APPROVE the project structure before proceeding.**\\n\\nOnce ValidatorAgent confirms the project is complete and properly structured:\\n1. **Create zip file**: Use `zip_project(folder_path, output_zip)` to compress the project\\n   - `folder_path`: The project folder name (e.g., \\\"todo-app\\\")\\n   - `output_zip`: Desired zip filename (e.g., \\\"todo-app.zip\\\")\\n\\n**Tools available:**\\n- `run_shell(command: str)` — for any additional commands if needed\\n- `zip_project(folder_path: str, output_zip: str)` — to compress the project folder\\n\\n**Example:**\\n```python\\nzip_project(\\\"todo-app\\\", \\\"todo-app.zip\\\")\\n```\\n\\n**Important:**\\n- Only proceed when ValidatorAgent gives APPROVED status\\n- Do not zip if ValidatorAgent status is REJECTED\\n- npm install and build testing will be handled by the user separately\\n\\nEnd your response with \\\"TERMINATE\\\" when the zip file is created successfully. CRITICAL HANDOFF REQUIREMENT: Wait for 'VALIDATION_COMPLETE' signal before creating zip file. When zip file is created successfully, end your final message with exactly: 'EXECUTION_COMPLETE - Project packaged successfully' Then add 'TERMINATE' to end the workflow.",
+          "model_client_stream": false,
+          "reflect_on_tool_use": false,
+          "tool_call_summary_format": "{result}"
+        }
+      }
+    ],
+    "termination_condition": {
+      "provider": "autogen_agentchat.base.OrTerminationCondition",
+      "component_type": "termination",
+      "version": 1,
+      "component_version": 1,
+      "label": "OrTerminationCondition",
+      "config": {
+        "conditions": [
+          {
+            "provider": "autogen_agentchat.conditions.TextMentionTermination",
+            "component_type": "termination",
+            "version": 1,
+            "component_version": 1,
+            "description": "Terminate the conversation if TERMINATE is mentioned.",
+            "label": "FinalTermination",
+            "config": {
+              "text": "TERMINATE"
+            }
+          },
+          {
+            "provider": "autogen_agentchat.conditions.MaxMessageTermination",
+            "component_type": "termination",
+            "version": 1,
+            "component_version": 1,
+            "description": "Terminate the conversation after a maximum number of messages have been exchanged.",
+            "label": "MaxMessageTermination",
+            "config": {
+              "max_messages": 75,
+              "include_agent_event": false
+            }
+          }
+        ]
+      }
+    }
+  }
+}
